@@ -9,6 +9,7 @@ using namespace std;
 extern "C" {
     int square(int n);
 	long long calculate(int* in_array, int length);
+	long long fibonacci(int n);
  }
  
  
@@ -26,3 +27,9 @@ long long calculate(int* in_array, int length){
 	  return res;
 }
  
+ long long fibonacci(int n) {
+	if (n == 0 || n == 1)
+        return n;
+    else
+        return (fibonacci(n - 1) + fibonacci(n - 2));
+ }
