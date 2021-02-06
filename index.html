@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="test.js"></script>
+<script>
+function start(){
+	const len = 10000000;
+	const array = Array.from({length: len}, () => Math.floor(Math.random() * 10));
+	let result = sumUpAssembly(array)
+	console.log(result);
+	begin = performance.now()
+	result = sumUpJs(array)
+	end = performance.now()
+	console.log(result);
+	console.log(end - begin);
+	return false;
+}
+function sumUpJs(array) {
+	return array.reduce((a, b) => a + b, 0)
+}
+function transferToHeap(arr) {
+ const floatArray = toFloatArr(arr);
+ heapSpace = Module._malloc(floatArray.length * 
+                     floatArray.BYTES_PER_ELEMENT); // 1
+ Module.HEAPF32.set(floatArray, heapSpace >> 2); // 2 
+ return heapSpace;
+function toFloatArr(arr) {
+  const res = new Int32Array(arr.length); // 3 
+     for (let i=0; i < arr.length; i++)
+         res[i] = arr[i];
+     return res;
+ }
+}
+function sumUpAssembly(arr) {
+ let arrayOnHeap; // 4.
+ try {
+     arrayOnHeap = transferToHeap(arr);
+	 let begin = performance.now()
+     let res =  Module._calculate(arrayOnHeap, arr.length);
+	 let end = performance.now()
+	 console.log(end - begin);
+	 return res;
+ } finally {
+	Module._free(arrayOnHeap); // 5.
+ }
+}
+</script>
+</head>
+<body>
+
+<h1>Webassembly C++</h1>
+<button onclick="start()">start</button>
+<p> Result:
+<div id="output"></div>
+</p>
+</body>
+</html>
